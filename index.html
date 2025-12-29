@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Zilch with the Vague Boys</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: auto;
+      padding: 20px;
+      background: radial-gradient(circle, #1f7a3a, #0f3d1e);
+      color: #f5f5f5;
+    }
+
+    h1 {
+      text-align: center;
+      color: gold;
+      letter-spacing: 2px;
+    }
+
+    input, button {
+      border-radius: 6px;
+      border: none;
+      padding: 6px;
+      font-size: 14px;
+    }
+
+    button {
+      background-color: gold;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #ffd700cc;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      background-color: #145a32;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    th {
+      background-color: #0b3d1e;
+      color: gold;
+      padding: 10px;
+    }
+
+    td {
+      padding: 10px;
+      border-top: 1px solid #1f7a3a;
+      text-align: center;
+    }
+
+    /* 🔥 Highlight current player */
+    .active-player {
+      background-color: #2ecc71 !important;
+      color: #000;
+      font-weight: bold;
+    }
+	
+	/* Make totals large and bold */
+.total-score {
+  font-size: 1.8em;
+  font-weight: bold;
+  color: gold;
+}
+  </style>
+</head>
+
+<body>
+
+  <h1>🎲🎲🎲 ZILCH 🎲🎲🎲</h1>
+
+  <h3>Add Players</h3>
+  <input id="playerName" placeholder="Player name">
+  <button onclick="addPlayer()">Add</button>
+
+  <table id="scoreTable">
+    <thead>
+      <tr>
+        <th>Player</th>
+        <th>Enter Score</th>
+        <th>Total</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    const players = [];
+    const totals = {};
+    let currentPlayerIndex = 0;
+
+    function addPlayer() {
+      const input = document.getElementById("playerName");
+      const name = input.value.trim();
+
+      if (!name || totals[name]) return;
+
+      players.push(name);
+      totals[name] = 0;
+
+      const row = document.createElement("tr");
+      row.id = `row-${name}`;
+
+      row.innerHTML = `
+        <td>${name}</td>
+        <td>
+          <input type="number" min="0">
+          <button onclick="addScore('${name}', this)">Add</button>
+        </td>
+        <td id="total-${name}" class="total-score">0</td>
+      `;
+
+      document.querySelector("#scoreTable tbody").appendChild(row);
+      input.value = "";
+
+      highlightCurrentPlayer();
+    }
+
+    function addScore(name, button) {
+      // Only allow active player to score
+      if (players[currentPlayerIndex] !== name) return;
+
+      const input = button.previousElementSibling;
+      const score = parseInt(input.value);
+
+      if (isNaN(score)) return;
+
+      totals[name] += score;
+      document.getElementById(`total-${name}`).innerText = totals[name];
+      input.value = "";
+
+      // Next player's turn
+      currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
+      highlightCurrentPlayer();
+    }
+
+    function highlightCurrentPlayer() {
+      players.forEach(p => {
+        document.getElementById(`row-${p}`)?.classList.remove("active-player");
+      });
+
+      const current = players[currentPlayerIndex];
+      document.getElementById(`row-${current}`)?.classList.add("active-player");
+    }
+  </script>
+
+</body>
+</html>
